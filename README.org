@@ -187,8 +187,8 @@ Colourful delimiters make it easier to tell where they start and stop.
     (ivy-mode 1))
 #+end_src
 
-** Org
-** PDF
+** TODO Org (maths opt.)
+** TODO PDF (pdf-tools)
 ** Projectile
 
 Jump between and easily manage projects and files therein
@@ -220,8 +220,8 @@ Interact with git using magit
     :ensure t)
 #+end_src
 
-** LSP
-** YASnippet
+** TODO LSP (lsp-mode)
+** TODO YASnippet
 ** General Keybindings
 
 We should be able to use general.el to use leader keys, similar as to vim or spacemacs.
@@ -294,7 +294,7 @@ Commonly accessed keybindings with no particular group or otherwise one-offs
     "qq" '(save-buffers-kill-terminal :which-key "quit"))
 #+end_src
 
-* Programming Languages
+* TODO Programming Languages
 ** C/C++
 ** Python
 ** Haskell
