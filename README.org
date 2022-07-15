@@ -183,11 +183,11 @@ Colourful delimiters make it easier to tell where they start and stop.
 	   ("C-l" . ivy-done)
 	   ("C-j" . ivy-next-line)
 	   ("C-k" . ivy-previous-line))
-    :config
+    :init
     (ivy-mode 1))
 #+end_src
 
-** TODO Org (maths opt.)
+** TODO Org (latex optimisation)
 ** TODO PDF (pdf-tools)
 ** Projectile
 
@@ -220,8 +220,52 @@ Interact with git using magit
     :ensure t)
 #+end_src
 
-** TODO LSP (lsp-mode)
-** TODO YASnippet
+** LSP
+
+Make Emacs an LSP-capable client. Hooks for languages go here too.
+
+#+begin_src elisp
+  (use-package lsp-mode
+    :ensure t
+    :init
+    (setq lsp-keymap-prefix "C-c l")
+    :hook ((c-or-c++-mode . lsp-deferred)
+	   (lsp-mode . lsp-enable-which-key-integration))
+    :config
+    (setq lsp-modeline-diagnostics-scope :workspace)
+    :commands (lsp lsp-deferred))
+#+end_src
+
+Integrate this with ~ivy~, for features like completion-at-point with ivy (~complete-symbol~)
+
+#+begin_src elisp
+  (use-package lsp-ivy
+    :ensure t
+    :commands lsp-ivy-workspace-symbol)
+#+end_src
+
+Add error-checking with ~flycheck~
+
+#+begin_src elisp
+  (use-package flycheck
+    :ensure t
+    :init (global-flycheck-mode))
+#+end_src
+
+** YASnippet
+
+#+begin_src elisp
+  (use-package yasnippet
+    :ensure t
+    :config
+    (yas-global-mode 1))
+#+end_src
+
+#+begin_src elisp
+  (use-package yasnippet-snippets
+    :ensure t)
+#+end_src
+
 ** General Keybindings
 
 We should be able to use general.el to use leader keys, similar as to vim or spacemacs.
@@ -283,6 +327,14 @@ Note that these keybindings are not comprehensive, separating them as such shoul
     "gg" '(magit :which-key "git status"))
 #+end_src
 
+*** Projectile
+
+#+begin_src elisp
+  (otg/leader-keys
+    "p" '(:keymap projectile-command-map :which-key "projectile"))
+#+end_src
+
+
 *** Misc
 
 Commonly accessed keybindings with no particular group or otherwise one-offs
@@ -291,10 +343,14 @@ Commonly accessed keybindings with no particular group or otherwise one-offs
   (otg/leader-keys
     "s" '(counsel-grep-or-swiper :which-key "search")
     "SPC" '(counsel-M-x :which-key "M-x")
-    "qq" '(save-buffers-kill-terminal :which-key "quit"))
+    "qq" '(save-buffers-kill-terminal :which-key "quit")
+    "is" '(yas-insert-snippet :which-key "insert snippet"))
 #+end_src
 
 * TODO Programming Languages
+
+LSP hooks for languages go in [[LSP][LSP]]
+
 ** C/C++
 ** Python
 ** Haskell
