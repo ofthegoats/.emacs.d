@@ -80,10 +80,23 @@ Want to use the use-package macro to make package management easy
   (require 'package)
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
   (package-initialize)
-  (package-install 'use-package)
+  (unless (package-installed-p 'use-package)
+    (package-install 'use-package))
 #+end_src
 
 * Packages
+** Benchmark
+
+See where emacs is taking the longest to load, investigate.
+
+#+begin_src elisp
+  (use-package benchmark-init
+    :ensure t
+    :config
+    ;; To disable collection of benchmark data after init is done.
+    (add-hook 'after-init-hook 'benchmark-init/deactivate))
+#+end_src
+
 ** Display
 
 Load gruvbox theme
@@ -93,6 +106,15 @@ Load gruvbox theme
     :ensure t
     :config
     (load-theme 'gruvbox-dark-hard t))
+#+end_src
+
+** Which-key
+
+#+begin_src elisp
+  (use-package which-key
+    :ensure t
+    :config
+    (which-key-mode))
 #+end_src
 
 ** Evil
@@ -128,6 +150,7 @@ Comment stuff out quickly
 #+begin_src elisp
   (use-package evil-commentary
     :ensure t
+    :after evil
     :config
     (evil-commentary-mode))
 #+end_src
@@ -143,18 +166,29 @@ Colourful delimiters make it easier to tell where they start and stop.
     (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 #+end_src
 
-** Org
-** PDF
 ** Counsel/Ivy
 
 #+begin_src elisp
-    (use-package counsel
-      :ensure t
-      :config
-      (ivy-mode 1)
-      (global-set-key (kbd "C-s") 'swiper-isearch))
+  (use-package counsel
+    :ensure t
+    :diminish
+    :bind (("C-s" . swiper)
+	   ("M-x" . counsel-M-x)
+	   :map ivy-minibuffer-map
+	   ("TAB" . ivy-alt-done)
+	   ("C-l" . ivy-alt-done)
+	   ("C-j" . ivy-next-line)
+	   ("C-k" . ivy-previous-line)
+	   :map ivy-switch-buffer-map
+	   ("C-l" . ivy-done)
+	   ("C-j" . ivy-next-line)
+	   ("C-k" . ivy-previous-line))
+    :config
+    (ivy-mode 1))
 #+end_src
 
+** Org
+** PDF
 ** Projectile
 
 Jump between and easily manage projects and files therein
@@ -182,14 +216,84 @@ Interact with git using magit
 
 #+begin_src elisp
   (use-package magit
+    :commands (magit magit-diff)
     :ensure t)
 #+end_src
 
 ** LSP
-
-
-
 ** YASnippet
+** General Keybindings
+
+We should be able to use general.el to use leader keys, similar as to vim or spacemacs.
+
+#+begin_src elisp
+  (use-package general
+    :ensure t
+    :config
+    (general-create-definer otg/leader-keys
+      :keymaps '(normal insert visual)
+      :prefix "SPC"
+      :global-prefix "C-SPC"))
+#+end_src
+
+Note that these keybindings are not comprehensive, separating them as such should keep them easy to change
+
+*** File Operations
+
+#+begin_src elisp
+  (otg/leader-keys
+       "f" '(:ignore f :which-key "files")
+       "ff" '(counsel-find-file :which-key "file find")
+       "fs" '(save-buffer :which-key "file save"))
+#+end_src
+
+*** Buffer Operations
+
+#+begin_src elisp
+  (otg/leader-keys
+    "b" '(:ignore b :which-key "buffer")
+    "bb" '(counsel-switch-buffer :which-key "buffer switch")
+    "bd" '(evil-delete-buffer :which "buffer delete"))
+#+end_src
+
+*** Window Operations
+
+#+begin_src elisp
+  (otg/leader-keys
+    "w" '(:ignore w :which-key "windows")
+    "wh" '(evil-window-left :which-key "window right")
+    "wj" '(evil-window-down :which-key "window down")
+    "wk" '(evil-window-up :which-key "window up")
+    "wl" '(evil-window-right :which-key "window right")
+    "wH" '(evil-window-move-far-left :which-key "move window left")
+    "wJ" '(evil-window-move-very-bottom :which-key "move window down")
+    "wK" '(evil-window-move-very-top :which-key "move window up")
+    "wL" '(evil-window-move-far-right :which-key "move window right")
+    "ws" '(evil-window-split :which-key "horizontal split")
+    "wv" '(evil-window-vsplit :which-key "vertical split")
+    "wd" '(evil-window-delete :which-key "window delete")
+    "wo" '(delete-other-windows :which-key "window only"))
+#+end_src
+
+*** Git Operations
+
+#+begin_src elisp
+  (otg/leader-keys
+    "g" '(:ignore g :which-key "git")
+    "gg" '(magit :which-key "git status"))
+#+end_src
+
+*** Misc
+
+Commonly accessed keybindings with no particular group or otherwise one-offs
+
+#+begin_src elisp
+  (otg/leader-keys
+    "s" '(counsel-grep-or-swiper :which-key "search")
+    "SPC" '(counsel-M-x :which-key "M-x")
+    "qq" '(save-buffers-kill-terminal :which-key "quit"))
+#+end_src
+
 * Programming Languages
 ** C/C++
 ** Python
