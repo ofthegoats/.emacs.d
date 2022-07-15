@@ -1,0 +1,19 @@
+#+title: Org Literate Config
+#+author: Piotr Kozicki
+#+property: header-args :tangle yes
+
+* Move backups
+
+By default, emacs will leave ~file~\~ all over the place - these files are
+backups in the case of a crash or similar. Even if this is useful, it's
+annoying. I would like to put them all in one place.
+
+#+begin_src elisp
+  (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+#+end_src
+
+* Load theme
+
+#+begin_src elisp
+  (load-theme 'tango-dark t)
+#+end_src
