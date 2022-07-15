@@ -1,8 +1,53 @@
 #+title: Org Literate Config
 #+author: Piotr Kozicki
 #+property: header-args :tangle yes
+#+startup: overview
 
-* Move backups
+* Emacs Initialisation
+** Settings
+
+Defining sane settings related to global emacs and startup. If in doubt of where to put something,
+consider here. Make sure that everything here will always work, or at least produce the minimum needed
+to fix something else that might break later in this file.
+
+*** Appearance
+
+Excluding theme, which is installed with ~use-package~ later.
+
+Load font
+
+#+begin_src elisp
+  (add-to-list 'default-frame-alist
+	       '(font . "JetbrainsMono Nerd Font-13"))
+#+end_src
+
+Line numbers
+
+#+begin_src elisp
+  (setq display-line-numbers-type 'relative)
+  (global-display-line-numbers-mode)
+#+end_src
+
+Disable decorations etc.
+
+#+begin_src elisp
+  (menu-bar-mode -1)
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1)
+#+end_src
+
+*** Autopairs (electric)
+
+Globally enable the minor ~electric-pair-mode~
+
+#+begin_src elisp
+  (electric-pair-mode 1)
+#+end_src
+
+This may not provide the best pairs for /every/ programming language. [[https://www.emacswiki.org/emacs/ElectricPair][Add a hook]] as demonstrated in the
+documentation, for the specific programming language.
+
+*** Backups
 
 By default, emacs will leave ~file~\~ all over the place - these files are
 backups in the case of a crash or similar. Even if this is useful, it's
@@ -12,8 +57,140 @@ annoying. I would like to put them all in one place.
   (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
 #+end_src
 
-* Load theme
+*** Startup screen
 
 #+begin_src elisp
-  (load-theme 'tango-dark t)
+  (setq inhibit-startup-screen t)
+  (setq initial-scratch-message nil)
 #+end_src
+
+*** Notifications
+
+Turn off that loud beep
+
+#+begin_src elisp
+  (setq ring-bell-function 'ignore)
+#+end_src
+
+** Package Management
+
+Want to use the use-package macro to make package management easy
+
+#+begin_src elisp
+  (require 'package)
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+  (package-initialize)
+  (package-install 'use-package)
+#+end_src
+
+* Packages
+** Display
+
+Load gruvbox theme
+
+#+begin_src elisp
+  (use-package gruvbox-theme
+    :ensure t
+    :config
+    (load-theme 'gruvbox-dark-hard t))
+#+end_src
+
+** Evil
+
+Vim navigation. ~evil-want-keybinding~ is set to ~nil~ for ~evil-collection~
+
+#+begin_src elisp
+  (use-package evil
+    :ensure t
+    :init
+    (setq evil-want-keybinding nil
+	  evil-want-C-u-scroll t)
+    :config
+    (evil-mode 1))
+#+end_src
+
+*** evil-collection
+
+Improved vim navigation in most contexts
+
+#+begin_src elisp
+  (use-package evil-collection
+    :ensure t
+    :after evil
+    :config
+    (evil-collection-init))
+#+end_src
+
+*** evil-commentary
+
+Comment stuff out quickly
+
+#+begin_src elisp
+  (use-package evil-commentary
+    :ensure t
+    :config
+    (evil-commentary-mode))
+#+end_src
+
+** Rainbow Delimiters
+
+Colourful delimiters make it easier to tell where they start and stop.
+
+#+begin_src elisp
+  (use-package rainbow-delimiters
+    :ensure t
+    :config
+    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+#+end_src
+
+** Org
+** PDF
+** Counsel/Ivy
+
+#+begin_src elisp
+    (use-package counsel
+      :ensure t
+      :config
+      (ivy-mode 1)
+      (global-set-key (kbd "C-s") 'swiper-isearch))
+#+end_src
+
+** Projectile
+
+Jump between and easily manage projects and files therein
+
+#+begin_src elisp
+  (use-package projectile
+    :ensure t
+    :config
+    (projectile-mode 1)
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+#+end_src
+
+** Git
+
+View diff in gutter
+
+#+begin_src elisp
+  (use-package git-gutter
+    :ensure t
+    :config
+    (global-git-gutter-mode +1))
+#+end_src
+
+Interact with git using magit
+
+#+begin_src elisp
+  (use-package magit
+    :ensure t)
+#+end_src
+
+** LSP
+
+
+
+** YASnippet
+* Programming Languages
+** C/C++
+** Python
+** Haskell
