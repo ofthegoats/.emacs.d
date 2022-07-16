@@ -199,7 +199,41 @@ Colourful delimiters make it easier to tell where they start and stop.
     (ivy-mode 1))
 #+end_src
 
-** TODO Org (latex optimisation)
+** Org
+
+TODO optimise this better for writing maths inside org-mode
+
+*** Org-Roam
+
+Zettelkasten note-taking
+
+#+begin_src elisp
+  (use-package org-roam
+    :ensure t
+    :init (setq org-roam-directory "~/.org/roam"))
+#+end_src
+
+*** Latex Preview
+
+#+begin_src elisp
+  (setq org-preview-latex-default-process 'dvisvgm
+	org-startup-folded t
+	org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
+#+end_src
+
+*** Source Snippets
+
+Add languages to be able to evaluate inline with
+
+#+begin_src elisp
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((python . t)
+     (C . t)
+     (haskell . t)
+     (latex . t)))
+#+end_src
+
 ** TODO PDF (pdf-tools)
 ** Projectile
 
@@ -360,6 +394,15 @@ Note that these keybindings are not comprehensive, separating them as such shoul
 #+begin_src elisp
   (otg/leader-keys
     "p" '(:keymap projectile-command-map :which-key "projectile" :package projectile))
+#+end_src
+
+*** Org
+
+#+begin_src elisp
+  (otg/leader-keys
+    "o" '(:ignore o :which-key "org")
+    "or" '(:ignore r :which-key "roam")
+    "orf" '(org-roam-node-find :which-key "find node"))
 #+end_src
 
 *** Misc
