@@ -10,6 +10,16 @@ Defining sane settings related to global emacs and startup. If in doubt of where
 consider here. Make sure that everything here will always work, or at least produce the minimum needed
 to fix something else that might break later in this file.
 
+*** Garbage Collection
+
+Increase the garbage collection threshold
+
+#+begin_src elisp
+ (setq gc-cons-threshold (* 50 1000 1000)) 
+#+end_src
+
+Lowered at the end of the file
+
 *** Appearance
 
 Excluding theme, which is installed with ~use-package~ later.
@@ -78,7 +88,9 @@ Want to use the use-package macro to make package management easy
 
 #+begin_src elisp
   (require 'package)
-  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+			   ("melpa-stable" . "https://stable.melpa.org/packages/")
+			   ("gnu" . "https://elpa.gnu.org/packages/")))
   (package-initialize)
   (unless (package-installed-p 'use-package)
     (package-install 'use-package))
@@ -91,11 +103,9 @@ Want to use the use-package macro to make package management easy
 See where emacs is taking the longest to load, investigate.
 
 #+begin_src elisp
-  (use-package benchmark-init
+  (use-package esup
     :ensure t
-    :config
-    ;; To disable collection of benchmark data after init is done.
-    (add-hook 'after-init-hook 'benchmark-init/deactivate))
+    :pin melpa-stable)
 #+end_src
 
 ** Display
@@ -201,7 +211,13 @@ Colourful delimiters make it easier to tell where they start and stop.
 
 ** Org
 
-TODO optimise this better for writing maths inside org-mode
+TODO optimise this better for writing maths inside org-mode, and faster launches
+
+#+begin_src elisp
+  (use-package org
+    :ensure t
+    :pin gnu)
+#+end_src
 
 *** Org-Roam
 
@@ -210,6 +226,7 @@ Zettelkasten note-taking
 #+begin_src elisp
   (use-package org-roam
     :ensure t
+    :commands (org-roam-node-find)
     :init (setq org-roam-directory "~/.org/roam"))
 #+end_src
 
@@ -221,9 +238,7 @@ Zettelkasten note-taking
 	org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
 #+end_src
 
-*** Source Snippets
-
-Add languages to be able to evaluate inline with
+*** Code Snippets
 
 #+begin_src elisp
   (org-babel-do-load-languages
@@ -316,13 +331,13 @@ Add error-checking with ~flycheck~
   (use-package yasnippet
     :ensure t
     :commands (yas-insert-snippet)
-    :init
-    (yas-global-mode 1))
+    :config (yas-global-mode))
 #+end_src
 
 #+begin_src elisp
   (use-package yasnippet-snippets
-    :ensure t)
+    :ensure t
+    :commands (yas-insert-snippet))
 #+end_src
 
 ** General Keybindings
@@ -421,8 +436,11 @@ Commonly accessed keybindings with no particular group or otherwise one-offs
 
 LSP hooks for languages go in [[LSP][LSP]]
 
+Org-babel hooks go in [[Org][Org]]
+
 ** C/C++
 ** Python
+
 ** Haskell
 
 Emacs does not by default recognise ~haskell-mode~
@@ -433,3 +451,11 @@ Emacs does not by default recognise ~haskell-mode~
     :ensure t)
 #+end_src
 
+* Finish
+
+This block is not really that important, but here we set garbage
+collection to what it was before.
+
+#+begin_src elisp
+  (setq gc-cons-threshold (* 2 1000 1000))
+#+end_src
