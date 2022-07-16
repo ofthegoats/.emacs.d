@@ -82,6 +82,7 @@ Want to use the use-package macro to make package management easy
   (package-initialize)
   (unless (package-installed-p 'use-package)
     (package-install 'use-package))
+  (require 'use-package)
 #+end_src
 
 * Packages
@@ -128,7 +129,8 @@ Vim navigation. ~evil-want-keybinding~ is set to ~nil~ for ~evil-collection~
     (setq evil-want-keybinding nil
 	  evil-want-C-u-scroll t)
     :config
-    (evil-mode 1))
+    (evil-mode 1)
+    (define-key evil-insert-state-map (kbd "C-;") 'completion-at-point))
 #+end_src
 
 *** evil-collection
@@ -139,7 +141,7 @@ Improved vim navigation in most contexts
   (use-package evil-collection
     :ensure t
     :after evil
-    :config
+    :init
     (evil-collection-init))
 #+end_src
 
@@ -151,8 +153,18 @@ Comment stuff out quickly
   (use-package evil-commentary
     :ensure t
     :after evil
-    :config
+    :init
     (evil-commentary-mode))
+#+end_src
+
+*** evil-surround
+
+#+begin_src elisp
+  (use-package evil-surround
+    :ensure t
+    :after evil
+    :init
+    (global-evil-surround-mode 1))
 #+end_src
 
 ** Rainbow Delimiters
@@ -196,9 +208,18 @@ Jump between and easily manage projects and files therein
 #+begin_src elisp
   (use-package projectile
     :ensure t
+    :bind-keymap ("C-c p" . 'projectile-command-map)
     :config
-    (projectile-mode 1)
-    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+    (projectile-mode 1))
+#+end_src
+
+** HL-TODO
+
+#+begin_src elisp
+  (use-package hl-todo
+    :ensure t
+    :config
+    (global-hl-todo-mode 1))
 #+end_src
 
 ** Git
@@ -229,10 +250,13 @@ Make Emacs an LSP-capable client. Hooks for languages go here too.
     :ensure t
     :init
     (setq lsp-keymap-prefix "C-c l")
-    :hook ((c-or-c++-mode . lsp-deferred)
+    :hook ((c-mode . lsp)
+	   (c++-mode . lsp)
+	   (python-mode . lsp)
 	   (lsp-mode . lsp-enable-which-key-integration))
     :config
     (setq lsp-modeline-diagnostics-scope :workspace)
+    (lsp-mode)
     :commands (lsp lsp-deferred))
 #+end_src
 
@@ -257,7 +281,8 @@ Add error-checking with ~flycheck~
 #+begin_src elisp
   (use-package yasnippet
     :ensure t
-    :config
+    :commands (yas-insert-snippet)
+    :init
     (yas-global-mode 1))
 #+end_src
 
@@ -297,7 +322,9 @@ Note that these keybindings are not comprehensive, separating them as such shoul
   (otg/leader-keys
     "b" '(:ignore b :which-key "buffer")
     "bb" '(counsel-switch-buffer :which-key "buffer switch")
-    "bd" '(evil-delete-buffer :which "buffer delete"))
+    "bd" '(evil-delete-buffer :which-key "buffer delete")
+    "bn" '(next-buffer :which-key "buffer next")
+    "bp" '(previous-buffer :which-key "buffer prev"))
 #+end_src
 
 *** Window Operations
@@ -324,16 +351,16 @@ Note that these keybindings are not comprehensive, separating them as such shoul
 #+begin_src elisp
   (otg/leader-keys
     "g" '(:ignore g :which-key "git")
-    "gg" '(magit :which-key "git status"))
+    "gg" '(magit :which-key "git status")
+    "gs" '(magit :which-key "git status"))
 #+end_src
 
 *** Projectile
 
 #+begin_src elisp
   (otg/leader-keys
-    "p" '(:keymap projectile-command-map :which-key "projectile"))
+    "p" '(:keymap projectile-command-map :which-key "projectile" :package projectile))
 #+end_src
-
 
 *** Misc
 
@@ -354,3 +381,12 @@ LSP hooks for languages go in [[LSP][LSP]]
 ** C/C++
 ** Python
 ** Haskell
+
+Emacs does not by default recognise ~haskell-mode~
+
+#+begin_src elisp
+  (use-package haskell-mode
+    :mode "\\.hs\\'"
+    :ensure t)
+#+end_src
+
