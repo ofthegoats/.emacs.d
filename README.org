@@ -250,6 +250,35 @@ Zettelkasten note-taking
 #+end_src
 
 ** TODO PDF (pdf-tools)
+** Shell
+*** vterm
+
+#+begin_src elisp
+  (use-package vterm
+    :ensure t)
+#+end_src
+** Popups
+
+Manage popups with project grouping using popper.el
+
+#+begin_src elisp
+  (use-package popper
+    :ensure t
+    :bind (("C-`" . popper-toggle-latest)
+	   ("M-`" . popper-cycle)
+	   ("C-M-`" . popper-toggle-type))
+    :init
+    (setq popper-reference-buffers
+	  '("\\*Messages\\*"
+	    "Output\\*$"
+	    "\\*Async Shell Command\\*"
+	    help-mode
+	    compilation-mode
+	    "^\\*vterm.*\\*$"  vterm-mode))
+    (popper-mode +1)
+    (popper-echo-mode +1))
+#+end_src
+
 ** Projectile
 
 Jump between and easily manage projects and files therein
@@ -370,6 +399,7 @@ Note that these keybindings are not comprehensive, separating them as such shoul
 #+begin_src elisp
   (otg/leader-keys
     "b" '(:ignore b :which-key "buffer")
+    "TAB" '(evil-switch-to-windows-last-buffer :which-key "window switch buffer")
     "bb" '(counsel-switch-buffer :which-key "buffer switch")
     "bd" '(evil-delete-buffer :which-key "buffer delete")
     "bn" '(next-buffer :which-key "buffer next")
@@ -427,6 +457,7 @@ Commonly accessed keybindings with no particular group or otherwise one-offs
 #+begin_src elisp
   (otg/leader-keys
     "s" '(counsel-grep-or-swiper :which-key "search")
+    "t" '(vterm-other-window :which-key "toggle term")
     "SPC" '(counsel-M-x :which-key "M-x")
     "qq" '(save-buffers-kill-terminal :which-key "quit")
     "is" '(yas-insert-snippet :which-key "insert snippet"))
