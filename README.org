@@ -119,6 +119,25 @@ Load gruvbox theme
     (load-theme 'gruvbox-dark-hard t))
 #+end_src
 
+*** Modeline
+
+#+begin_src elisp
+  (use-package doom-modeline
+    :ensure t
+    :hook (after-init . doom-modeline-mode))
+#+end_src
+
+** Indent Guide
+
+#+begin_src elisp
+  (use-package highlight-indent-guides
+    :ensure t
+    :hook '((prog-mode . highlight-indent-guides-mode))
+    :init
+    (setq highlight-indent-guides-method 'bitmap
+	  highlight-indent-guides-bitmap-function 'highlight-indent-guides--bitmap-line))
+#+end_src
+
 ** Which-key
 
 #+begin_src elisp
@@ -126,6 +145,13 @@ Load gruvbox theme
     :ensure t
     :config
     (which-key-mode))
+#+end_src
+
+** Undo/Redo
+
+#+begin_src elisp
+  (use-package undo-fu
+    :ensure t)
 #+end_src
 
 ** Evil
@@ -137,7 +163,8 @@ Vim navigation. ~evil-want-keybinding~ is set to ~nil~ for ~evil-collection~
     :ensure t
     :init
     (setq evil-want-keybinding nil
-	  evil-want-C-u-scroll t)
+	  evil-want-C-u-scroll t
+	  evil-undo-system 'undo-fu)
     :config
     (evil-mode 1)
     (define-key evil-insert-state-map (kbd "C-;") 'completion-at-point))
@@ -209,6 +236,15 @@ Colourful delimiters make it easier to tell where they start and stop.
     (ivy-mode 1))
 #+end_src
 
+Improved interface for ivy
+
+#+begin_src elisp
+  (use-package ivy-rich
+    :ensure t
+    :init
+    (ivy-rich-mode +1))
+#+end_src
+
 ** Org
 
 TODO optimise this better for writing maths inside org-mode, and faster launches
@@ -257,6 +293,7 @@ Zettelkasten note-taking
   (use-package vterm
     :ensure t)
 #+end_src
+
 ** Popups
 
 Manage popups with project grouping using popper.el
@@ -270,11 +307,16 @@ Manage popups with project grouping using popper.el
     :init
     (setq popper-reference-buffers
 	  '("\\*Messages\\*"
+	    "\\*Warnings\\*"
 	    "Output\\*$"
 	    "\\*Async Shell Command\\*"
 	    help-mode
 	    compilation-mode
-	    "^\\*vterm.*\\*$"  vterm-mode))
+	    "\\*Compile-Log\\*"
+	    "\\*Async-native-compile-log\\*"
+	    "^\\*vterm.*\\*$"  vterm-mode)
+	  popper-window-height 15
+	  popper-group-function #'popper-group-by-project)
     (popper-mode +1)
     (popper-echo-mode +1))
 #+end_src
