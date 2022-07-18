@@ -245,6 +245,14 @@ Improved interface for ivy
     (ivy-rich-mode +1))
 #+end_src
 
+** LaTeX
+
+#+begin_src elisp
+  (use-package tex :ensure auctex)
+  (use-package cdlatex :ensure t)
+  (add-hook 'LaTeX-mode-hook 'prettify-symbols-mode)
+#+end_src
+
 ** Org
 
 TODO optimise this better for writing maths inside org-mode, and faster launches
@@ -252,7 +260,9 @@ TODO optimise this better for writing maths inside org-mode, and faster launches
 #+begin_src elisp
   (use-package org
     :ensure t
-    :pin gnu)
+    :pin gnu
+    :init
+    (setq org-pretty-entities t))
 #+end_src
 
 *** Org-Roam
