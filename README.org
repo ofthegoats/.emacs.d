@@ -245,6 +245,14 @@ Improved interface for ivy
     (ivy-rich-mode +1))
 #+end_src
 
+** Company Completion
+
+#+begin_src elisp
+  (use-package company
+    :ensure t
+    :init (global-company-mode +1))
+#+end_src
+
 ** LaTeX
 
 #+begin_src elisp
@@ -324,7 +332,10 @@ Manage popups with project grouping using popper.el
 	    compilation-mode
 	    "\\*Compile-Log\\*"
 	    "\\*Async-native-compile-log\\*"
-	    "^\\*vterm.*\\*$"  vterm-mode)
+	    "^\\*vterm.*\\*$"  vterm-mode
+	    "^\\*ielm\\*$"
+	    magit-process-mode
+	    )
 	  popper-window-height 15
 	  popper-group-function #'popper-group-by-project)
     (popper-mode +1)
@@ -341,6 +352,22 @@ Jump between and easily manage projects and files therein
     :bind-keymap ("C-c p" . 'projectile-command-map)
     :config
     (projectile-mode 1))
+#+end_src
+
+** Treemacs
+
+#+begin_src elisp
+  (use-package treemacs
+    :ensure t
+    :defer t)
+
+  (use-package treemacs-evil
+    :after (treemacs evil)
+    :ensure t)
+
+  (use-package treemacs-magit
+    :after (treemacs magit)
+    :ensure t)
 #+end_src
 
 ** HL-TODO
@@ -515,7 +542,7 @@ Commonly accessed keybindings with no particular group or otherwise one-offs
     "is" '(yas-insert-snippet :which-key "insert snippet"))
 #+end_src
 
-* TODO Programming Languages
+* Programming Languages
 
 LSP hooks for languages go in [[LSP][LSP]]
 
